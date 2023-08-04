@@ -1,6 +1,6 @@
 # libstring
- Libstring is a lightweight C library with the goal of enabling you to perform simple string operations without _shooting yourself in the foot_.
- Here are some reasons supporting this claim:
+Libstring is a lightweight C library with the goal of enabling you to perform simple string operations without _shooting yourself in the foot_.
+Here are some reasons supporting this claim:
 
 1. Any string struct is treated as an immutable object. Consequently,
    any return value that is a reference points to a freshly allocated
