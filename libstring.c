@@ -165,3 +165,57 @@ bool string_is_substring(const string_t *str, const string_t *sub, size_t off) {
   return strncmp(&(str->buf[off]), sub->buf, sub->len) ? false : true;
   
 }
+
+/**********************************************************************/
+
+
+string_stack_t *string_split(const string_t *str, char delimiter);
+
+
+
+
+/*************************************************************************
+ *                         String Stack                                  *
+ *************************************************************************/
+
+string_stack_t *string_stack_init(size_t cap) {
+  string_stack_t *s = malloc(sizeof(string_stack_t));
+  s->a = malloc(cap * sizeof(string_t *));
+  s->cap = cap;
+  s->top = -1;
+  return s;
+}
+
+void string_stack_free(string_stack_t *s) {
+   free(s->a);
+   free(s);
+}
+
+bool string_stack_is_empty(string_stack_t *s) {
+    return s->top == -1;
+}
+
+bool string_stack_is_full(string_stack_t *s) {
+    return (size_t) (s->top + 1) == s->cap; 
+}
+
+void string_stack_resize(string_stack_t *s) {
+  string_t **cs = malloc(2 * s->cap * sizeof(string_t *));
+  memcpy(cs,s->a, s->cap * sizeof(string_t *));
+  s->cap *= 2;
+  free(s->a);
+  s->a = cs;
+}
+
+void string_stack_push(string_stack_t *s, string_t *str) {
+  if (string_stack_is_full(s)) string_stack_resize(s);
+  s->top += 1;
+  s->a[s->top] = str;
+}
+
+string_t *string_stack_pop(string_stack_t *s) {
+  if(string_stack_is_empty(s)) return string_new("");
+  s->top -=1;
+  return s->a[s->top+1];
+}
+

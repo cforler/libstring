@@ -32,6 +32,25 @@ string_t *string_readfd(int fd);
 string_t *string_concat(const string_t *s1, const string_t *s2);
 string_t *string_trim(const string_t *str);
 
+/**********************************************************************/
+
+typedef struct st_stack {
+   string_t **a;  
+   size_t cap;
+   int top;
+} string_stack_t;
+
+
+void string_stack_free(string_stack_t *s);
+bool string_stack_is_empty(string_stack_t *s);
+string_t *string_stack_pop(string_stack_t *s);
+
+string_stack_t *string_split(const string_t *str, char delimiter);
+
+
+/**********************************************************************/
+
+
 int string_compare(const string_t *s1, const string_t *s2);
 bool  string_equal(const string_t *s1, const string_t *s2);
 
