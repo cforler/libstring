@@ -137,6 +137,12 @@ void tst_equal4() {
   verify("equal 4", s1, s2);
 }
 
+void tst_equal5() {
+  string_t *s1 = string_new("😜̸̳︦");
+  string_t *s2 = string_new("😜\u0333\u0338\uFE26");
+  verify("equal 5", s1, s2);
+}
+
 void tst_compare1() {
   string_t *s1 = string_new("ABC");
   string_t *s2 = string_new("ABC");
@@ -246,6 +252,7 @@ int main() {
   tst_equal2();
   tst_equal3();
   tst_equal4();
+  tst_equal5();
   tst_compare1();
   tst_compare2();
   tst_compare3();
