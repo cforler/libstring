@@ -33,21 +33,23 @@ string_t *string_colored(const char *str, enum stringcolor c) {
 
 /**********************************************************************/
 
-string_t *string_new(const char *str) {
-  string_t *s = malloc(sizeof(string_t) + strlen(str));
-  s->len = strlen(str);
-
-  memcpy(s->buf, str, s->len);
+string_t *string_nnew(const char *str, size_t len) {
+  string_t *s = malloc(sizeof(string_t) + len);
+  s->len = len;
+  memcpy(s->buf, str, len);
   return s;
 }
 
 /**********************************************************************/
 
+string_t *string_new(const char *str) {
+  return string_nnew(str, strlen(str));
+}
+
+/**********************************************************************/
+
 string_t *string_clone(const string_t *str) {
-  string_t *s = malloc(sizeof(string_t) + str->len);
-  s->len = str->len;
-  memcpy(s->buf, str->buf, s->len);
-  return s;
+  return string_nnew(str->buf, str->len);
 }
 
 /**********************************************************************/
@@ -80,12 +82,8 @@ string_t *string_trim(const string_t *str) {
   r+=1;
   
   if(l> (size_t) r) return string_new("");
-  
-  string_t *s = malloc(sizeof(string_t) + (r-l));
-  s->len = r-l;
-  
-  memcpy(s->buf, &(str->buf[l]), s->len);
-  return s;
+
+  return string_nnew( &(str->buf[l]), r-l);
 }
 
 /**********************************************************************/
@@ -134,11 +132,7 @@ string_t *string_substring(const string_t *str, size_t start, size_t end){
   if(!(start <= end) && (end <= str->len))
     return string_new("");
 
-  size_t n = end-start;
-  string_t *r = malloc(sizeof(string_t) + n);
-  r->len = n;
-  memcpy(r->buf,&(str->buf[start]), n);
-  return r;
+  return string_nnew(&(str->buf[start]), end-start);
 }
 
 /**********************************************************************/
