@@ -8,6 +8,7 @@
 #include "libstring.h"
 
 #define BUF_LEN 65536
+#define CAP_DEFAULT 10
 
 
 string_t *string_colored(const char *str, enum stringcolor c) {
@@ -169,53 +170,123 @@ bool string_is_substring(const string_t *str, const string_t *sub, size_t off) {
 /**********************************************************************/
 
 
-string_stack_t *string_split(const string_t *str, char delimiter);
-
-
-
+string_vector_t *string_split(const string_t *str, char delimiter) {
+  string_vector_t *svec = string_vector_empty();
+  int start = 0;
+  for(int i=0; i< string_len(str); i++)
+    if(str->buf[i]==delimiter) {
+      string_vector_add(svec, string_nnew(&(str->buf[start]), i-start));
+      start = i+1;
+    }
+  string_vector_add(svec, string_nnew(&(str->buf[start]), string_len(str)-start));
+  return svec;
+}
 
 /*************************************************************************
- *                         String Stack                                  *
+ *                           String Vector                               *
  *************************************************************************/
 
-string_stack_t *string_stack_init(size_t cap) {
-  string_stack_t *s = malloc(sizeof(string_stack_t));
-  s->a = malloc(cap * sizeof(string_t *));
-  s->cap = cap;
-  s->top = -1;
-  return s;
+string_vector_t *string_vector_empty() {
+  string_vector_t *svec = malloc(sizeof(string_vector_t));
+  svec->buf = malloc(CAP_DEFAULT * sizeof(string_t *));
+  svec->cap = CAP_DEFAULT;
+  svec->top = -1;
+  return svec;
 }
 
-void string_stack_free(string_stack_t *s) {
-   free(s->a);
-   free(s);
+string_vector_t *string_vector_new(string_t *str) {
+  string_vector_t *svec = string_vector_empty();
+  string_vector_add(svec, str);
+  return svec;
+}
+  
+bool string_vector_is_empty(const string_vector_t *svec) {
+    return svec->top == -1;
 }
 
-bool string_stack_is_empty(string_stack_t *s) {
-    return s->top == -1;
+
+void string_vector_free(string_vector_t *svec) {
+  free(svec->buf);
+  free(svec);
 }
 
-bool string_stack_is_full(string_stack_t *s) {
-    return (size_t) (s->top + 1) == s->cap; 
+void string_vector_deepfree(string_vector_t *svec){
+  for(int i=0;i <= svec->top; i++) free(svec->buf[i]);
+  string_vector_free(svec);
 }
 
-void string_stack_resize(string_stack_t *s) {
-  string_t **cs = malloc(2 * s->cap * sizeof(string_t *));
-  memcpy(cs,s->a, s->cap * sizeof(string_t *));
-  s->cap *= 2;
-  free(s->a);
-  s->a = cs;
+bool string_vector_is_full(string_vector_t *svec) {
+    return (size_t) (svec->top + 1) == svec->cap; 
 }
 
-void string_stack_push(string_stack_t *s, string_t *str) {
-  if (string_stack_is_full(s)) string_stack_resize(s);
-  s->top += 1;
-  s->a[s->top] = str;
+void string_vector_resize(string_vector_t *svec) {
+  svec->buf = realloc(svec->buf, 2 * svec->cap * sizeof(string_t *));
+  svec->cap *= 2;
 }
 
-string_t *string_stack_pop(string_stack_t *s) {
-  if(string_stack_is_empty(s)) return string_new("");
-  s->top -=1;
-  return s->a[s->top+1];
+int string_vector_find(const string_vector_t *svec, const string_t *str) {
+  for(int i= 0; i<=svec->top; i++) 
+    if (string_equal(svec->buf[i] , str)) return i;
+  return -1;
 }
+
+void string_vector_add(string_vector_t *svec,  string_t *str) {
+  if (string_vector_is_full(svec)) string_vector_resize(svec);
+  svec->top += 1;
+  svec->buf[svec->top] = str;
+}
+
+
+/**********************************************************************/
+
+
+string_t *string_vector_remove(string_vector_t *svec, size_t index) {
+  if ((int)index > svec->top) return string_new("");
+  string_t *str = svec->buf[index];
+  for(int i=index; i<svec->top; i++) svec->buf[i] = svec->buf[i+1];
+  svec->top -=1;
+  return str;
+}
+
+
+/**********************************************************************/
+bool string_vector_equal(const string_vector_t *a, const string_vector_t *b) {
+  if(a->top != b->top) return false;
+  for(int i=0;i<=a->top;i++) if(!string_equal(a->buf[i],b->buf[i])) return false;
+  return true;  
+}
+
+/**********************************************************************/
+
+
+string_vector_t *string_vector_map(strfunc_t func,
+                                   const string_vector_t *svec) {
+  if(string_vector_len(svec) == 0)  return string_vector_empty();
+
+  string_vector_t *res = malloc(sizeof(string_vector_t));
+  res->buf = malloc(svec->cap * sizeof(string_t *));
+  res->cap = svec->cap;
+  res->top = svec->top;
+  memcpy(res->buf, svec->buf, svec->top * sizeof(string_t *));
+  
+  for(int i = 0; i<= svec->top; i++) res->buf[i] = func(svec->buf[i]);
+
+  return res;
+}
+
+
+/**********************************************************************/
+
+
+string_vector_t *string_vector_filter(strboolfunc_t func,
+                                      const string_vector_t *svec) {
+  string_vector_t *res = string_vector_empty();
+  
+  for(int i = 0; i<= svec->top; i++)
+    if(func(svec->buf[i])) string_vector_add(res, string_clone(svec->buf[i])); 
+  
+  return res;     
+}
+
+
 
