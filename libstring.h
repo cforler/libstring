@@ -98,7 +98,7 @@ static inline size_t string_vector_len(const string_vector_t *svec) {
   return (size_t)(svec->top+1);
 }
 
-static inline char string_index(const string_t *s, size_t index) {
+static inline char string_get(const string_t *s, size_t index) {
   return (index < s->len) ? s->buf[index] : -1;
 }
 
