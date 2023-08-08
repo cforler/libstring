@@ -173,7 +173,7 @@ bool string_is_substring(const string_t *str, const string_t *sub, size_t off) {
 string_vector_t *string_split(const string_t *str, char delimiter) {
   string_vector_t *svec = string_vector_empty();
   int start = 0;
-  for(int i=0; i< string_len(str); i++)
+  for(size_t i=0; i< string_len(str); i++)
     if(str->buf[i]==delimiter) {
       string_vector_add(svec, string_nnew(&(str->buf[start]), i-start));
       start = i+1;

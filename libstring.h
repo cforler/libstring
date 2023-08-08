@@ -110,7 +110,7 @@ static inline bool string_empty(const string_t *s) {
   return s->len == 0;
 }
 
-static inline int string_len(const string_t *s) {
+static inline size_t string_len(const string_t *s) {
   return s->len;
 }
 

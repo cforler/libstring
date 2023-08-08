@@ -432,7 +432,7 @@ void test_strvec_map() {
 /**********************************************************************/
 
 bool strisupper(string_t *str) {
-  for(int i=0; i < string_len(str); i++) 
+  for(size_t i=0; i < string_len(str); i++) 
     if(!isupper(str->buf[i])) return false;
   
   return true;
