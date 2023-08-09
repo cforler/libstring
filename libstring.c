@@ -65,6 +65,16 @@ string_t *string_readfd(int fd) {
 
 /**********************************************************************/
 
+string_t *string_readline(FILE *stream) {
+  char buf[BUF_LEN];
+  if(!fgets(buf, BUF_LEN-1, stream)) return string_new("");
+  buf[strlen(buf)-1] = '\0';
+  return string_new(buf);
+}
+
+
+/**********************************************************************/
+
 string_t *string_concat(const string_t *s1, const string_t *s2) {
   string_t *s = malloc(sizeof(string_t) + s1->len + s2->len);
   s->len = s1->len + s2->len;

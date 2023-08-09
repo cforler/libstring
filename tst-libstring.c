@@ -249,6 +249,17 @@ void tst_is_substring2() {
 
 /***********************************************************************/
 
+void tst_readline() {
+  string_t *s1 = string_new("#include <stdlib.h>");
+  FILE *f = fopen("tst-libstring.c", "r");
+  string_t *s2 = string_readline(f);
+  fclose(f);
+  verify("readline", s1, s2);
+}
+
+
+/***********************************************************************/
+
 void string_tests() {
   tst_colored();
   tst_concat1();
@@ -273,6 +284,7 @@ void string_tests() {
   tst_substring_index4();
   tst_is_substring1();
   tst_is_substring2();
+  tst_readline();
 }
 
 /**********************************************************************/

@@ -27,6 +27,7 @@ string_t *string_colored(const char *str, enum stringcolor c);
 string_t *string_new(const char *str);
 string_t *string_clone(const string_t *str);
 string_t *string_readfd(int fd);
+string_t *string_readline(FILE *stream);
 
 
 string_t *string_concat(const string_t *s1, const string_t *s2);
@@ -86,7 +87,6 @@ string_vector_t *string_vector_filter(strboolfunc_t func,
 
 string_vector_t *string_split(const string_t *str, char delimiter);
 
-
 /**********************************************************************/
 
 
@@ -105,6 +105,11 @@ static inline char string_get(const string_t *s, size_t index) {
 static inline string_t *string_read() {
   return string_readfd(STDIN_FILENO);
 }
+
+static inline string_t *string_readf(FILE *stream) {
+  return string_readfd(fileno(stream));
+}
+
 
 static inline bool string_empty(const string_t *s) {
   return s->len == 0;
