@@ -90,7 +90,8 @@ string_vector_t *string_split(const string_t *str, char delimiter);
 /**********************************************************************/
 
 
-static inline string_t *string_vector_get(string_vector_t *svec, size_t index) {
+static inline string_t *string_vector_get(const string_vector_t *svec,
+                                          size_t index) {
   return ((int) index > svec->top) ? string_new("") : svec->buf[index];
 }
 
