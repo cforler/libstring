@@ -22,5 +22,8 @@ uninstall:
 	 $(RM)  $(LIB_DIR)/libstring.so
 	 $(RM)  $(INCLUDE_DIR)/libstring.h
 
+html:
+	doxygen doxygen.conf
+
 clean:
-	$(RM) test-string *~ libstring.so  tst-libstring
+	$(RM) test-string *~ libstring.so  tst-libstring html

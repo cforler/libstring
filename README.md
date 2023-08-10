@@ -23,7 +23,7 @@ the foot. Here are some features and reasons supporting this claim:
 
 
 ## Documentation
-TBA
+Work in progress
 
 ## Dependencies
 * gcc     (http://gcc.gnu.org/) 
