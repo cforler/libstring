@@ -14,6 +14,7 @@
 string_t *string_colored(const char *str, enum stringcolor c) {
   int n =  strlen(str) + strlen(COLOR_DEFAULT) + strlen(COLOR_BLACK);
   string_t *s = malloc(sizeof(string_t) + n);
+  if(!s) return NULL;
   s->len = n;
   switch(c) {
   case BLACK:   memcpy(s->buf,COLOR_BLACK,strlen(COLOR_BLACK));     break;
@@ -36,6 +37,7 @@ string_t *string_colored(const char *str, enum stringcolor c) {
 
 string_t *string_nnew(const char *str, size_t len) {
   string_t *s = malloc(sizeof(string_t) + len);
+  if(!s) return NULL;
   s->len = len;
   memcpy(s->buf, str, len);
   return s;
@@ -77,6 +79,7 @@ string_t *string_readline(FILE *stream) {
 
 string_t *string_concat(const string_t *s1, const string_t *s2) {
   string_t *s = malloc(sizeof(string_t) + s1->len + s2->len);
+  if(!s) return NULL;
   s->len = s1->len + s2->len;
   memcpy(s->buf, s1->buf, s1->len);
   memcpy(s->buf+s1->len, s2->buf, s2->len);
@@ -150,6 +153,7 @@ string_t *string_substring(const string_t *str, size_t start, size_t end){
 
 char *string_tocstr(const string_t *str) {
   char *cstr = malloc(str->len +1);
+  if(!cstr) return NULL;
   memcpy(cstr, str->buf, str->len);
   cstr[str->len] = '\0';
   return cstr;
