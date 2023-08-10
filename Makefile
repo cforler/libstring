@@ -26,4 +26,5 @@ html:
 	doxygen doxygen.conf
 
 clean:
-	$(RM) test-string *~ libstring.so  tst-libstring html
+	$(RM) test-string *~ libstring.so tst-libstring
+	$(RM) -r html/
