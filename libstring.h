@@ -47,6 +47,7 @@ string_t *string_colored(const char *str, enum stringcolor c);
  **/
 string_t *string_new(const char *str);
 
+
 /**
  * Creates a new string_t object as a copy of the provided string.
  *
@@ -58,6 +59,7 @@ string_t *string_new(const char *str);
  *
  **/
 string_t *string_clone(const string_t *str);
+
 
 /**
  * Reads up to 64 KB of data from the specified file descriptor and
@@ -137,7 +139,7 @@ bool  string_equal(const string_t *s1, const string_t *s2);
  * @param start The starting index of the substring.
  * @param end The ending index of the substring 
  * @return A pointer to a newly allocated string containing the specified substring,
- *         or NULL if memory allocation failed or an empty string if the indices are out of bounds.
+ *         or NULL if memory allocation failed or NULL if the indices are out of bounds.
  *         The returned string must be deallocated using the standard C library function `free()`
  *         when no longer needed.
  **/
@@ -176,13 +178,137 @@ int   string_substring_index(const string_t *str, const string_t *substring);
 bool  string_is_substring(const string_t *str, const string_t *sub, size_t off);
 
 
+/**
+ * Returns the character at the specified index in the string.
+ *
+ * @param s The string to access.
+ * @param index The index of the character to retrieve.
+ * @return The character at the specified index, or -1 if the index is out of bounds.
+ **/
+static inline char string_get(const string_t *s, size_t index) {
+  return (index < s->len) ? s->buf[index] : -1;
+}
+
+
+/**
+ * Reads a line from the standard input and stores it as a newly allocated string.
+ *
+ * @return A pointer to a newly allocated string_t object containing the read line,
+ *         or NULL if memory allocation failed. The returned C string must be deallocated
+ * using the standard C library function `free()` when no longer needed.
+ **/
+static inline string_t *string_read() {
+  return string_readfd(STDIN_FILENO);
+}
+
+
+/**
+ * Reads a line from the specified file stream and stores it as a newly allocated string.
+ *
+ * @param stream The file stream to read from.
+ * @return A pointer to a newly allocated string containing the read line, or NULL if
+ *         memory allocation failed. The returned C string must be deallocated
+ *         using the standard C library function `free()` when no longer needed.
+ **/
+ static inline string_t *string_readf(FILE *stream) {
+  return string_readfd(fileno(stream));
+}
+
+
+/**
+ * Checks if the given string is empty (length is 0).
+ *
+ * @param s The string_t object to check.
+ * @return true if the string is empty, false otherwise.
+ */
+static inline bool string_empty(const string_t *s) {
+  return s->len == 0;
+}
+
+
+/**
+ * Returns the length (number of characters) of the string.
+ *
+ * @param s The string to get the length of.
+ * @return The length of the string.
+ */
+static inline size_t string_len(const string_t *s) {
+  return s->len;
+}
+
+
+/**
+ * Prints the contents of the string to the standard output.
+ *
+ * @param s The string to print.
+ * @return The number of characters printed, or a negative value if an error occurred.
+ **/
+static inline int string_print(const string_t *s) {
+  return printf("%.*s", (int) s->len, s->buf);
+}
+
+/**
+ * Prints the contents of the string to the specified file stream.
+ *
+ * @param s The string to print.
+ * @param f The file stream to print to.
+ * @return The number of characters printed, or a negative value if an error occurred.
+ **/
+static inline int string_printf(const string_t *s, FILE *f) {
+  return fprintf(f, "%.*s", (int) s->len, s->buf);
+}
+
+/**
+ * Prints the contents of the string followed by a newline character to the standard output.
+ *
+ * @param s The string to print.
+ * @return The number of characters printed, or a negative value if an error occurred.
+ */
+static inline int string_println(const string_t *s) {
+  return printf("%.*s\n", (int) s->len, s->buf);
+}
+
+/**
+ * Prints the contents of the string followed by a newline character to the specified file stream.
+ *
+ * @param s The string to print.
+ * @param f The file stream to print to.
+ * @return The number of characters printed, or a negative value if an error occurred.
+ */
+static inline int string_printlnf(const string_t *s, FILE *f) {
+  return fprintf(f, "%.*s\n", (int) s->len, s->buf);
+}
+
 /**********************************************************************/
 
 typedef char (*charfunc_t)(char);
 typedef bool (*boolfunc_t)(char);
 
+/**
+ * Applies a specified character transformation function to each character of the input string.
+ *
+ * @param func The character transformation function to apply.
+ * @param str The input string.
+ * @return A pointer to a newly allocated string containing the result of applying the function func
+ *         to each character of the input string, or NULL if memory allocation failed.
+ *         The returned string must be deallocated using the standard C library function `free()`
+ *         when no longer needed.
+ **/
 string_t *string_map(charfunc_t func, const string_t *str);
+
+
+/**
+ * Filters the characters of the input string using a specified predicate function.
+ *
+ * @param func The predicate function that determines which characters to include.
+ * @param str The input string.
+ * @return A pointer to a newly allocated string containing the characters from the input string
+ *         that satisfy the predicate function, or NULL if memory allocation failed.
+ *         The returned string must be deallocated using the standard C library function `free()`
+ *         when no longer needed.
+ **/
 string_t *string_filter(boolfunc_t func, const string_t *str);
+
 
 /**********************************************************************
  *                        String Vector                               * 
@@ -196,75 +322,167 @@ typedef struct st_strvec {
 } string_vector_t;
 
 
-typedef string_t * (*strfunc_t)(string_t *);
-typedef bool (*strboolfunc_t)(string_t *);
+/**
+ * Splits a string into multiple substrings based on a delimiter character.
+ *
+ * @param str The string to split.
+ * @param delimiter The delimiter character used for splitting.
+ * @return A pointer to a newly allocated string vector object containing the resulting substrings,
+ *         or NULL if memory allocation failed. The returned vector must be deallocated
+ *         using `string_vector_deepfree()`.
+ * @note The input string `str` is not modified, and the caller retains ownership of it.
+ **/
+string_vector_t *string_split(const string_t *str, char delimiter);
 
+/**
+ * Creates an empty string_vector.
+ *
+ * @return A pointer to a newly allocated empty stringt object, or NULL if memory allocation failed.
+ *         The returned vector must be deallocated using `string_vector_free()` when no longer needed.
+ **/
 string_vector_t *string_vector_empty();
+
+
+/**
+ * Creates a new string_vector initialized with the provided string.
+ *
+ * @param str The initial string to add to the vector.
+ * @return A pointer to a newly allocated string vector containing the provided string,
+ *         or NULL if memory allocation failed. The returned vector must be deallocated using
+ *         `string_vector_free()`.
+ * @note It is the caller's responsibility to free the allocated memory using `string_vector_free()`.
+ */
 string_vector_t *string_vector_new(string_t *str);
+
+/**
+ * Deallocates memory associated with a string_vector.
+ *
+ * @param svec The string_vector_t object to be deallocated.
+ * @note This function frees the memory of the vector itself, but NOT the memory of its elements.
+ */
+
 void string_vector_free(string_vector_t *svec);
+
+/**
+ * Deallocates memory associated with a string vecto and its contained string objects.
+ *
+ * @param svec The string_vector to be deallocated.
+ * @note This function frees the memory of the vector itself and its elements.
+ **/
 void string_vector_deepfree(string_vector_t *svec);
 
-void string_vector_add(string_vector_t *svec,  string_t *str);
+
+/**
+ * Adds a string to a string_vector 
+ *
+ * @param svec The string_vector_t object.
+ * @param str The string to add.
+ * @note The vector takes ownership of the provided string, and the caller should not deallocate
+ *       it manually.
+ **/
+void string_vector_add(string_vector_t *svec, string_t *str);
+
+/**
+ * Finds the index of a string in a string_vector_t object.
+ *
+ * @param svec The string vector
+ * @param str The string to find.
+ * @return The index of the first occurrence of the string in the vector, or -1 if not found.
+ **/
 int string_vector_find(const string_vector_t *svec, const string_t *str);
+
+/**
+ * Removes and returns the string at a specific index in a string_vector_t object.
+ *
+ * @param svec The string_vector_t object.
+ * @param index The index of the string to remove.
+ * @return A pointer to the removed string, or  NULL if the index is out of bounds.
+ *         The returned string must be deallocated using the standard C library function `free()`
+ *         when no longer needed.
+ **/
 string_t *string_vector_remove(string_vector_t *svec, size_t index);
+
+
+
+/**
+ * Compares two string_vector objects for equality.
+ *
+ * @param a The first string_vector.
+ * @param b The second string_vector
+ * @return true if the two vectors are equal (have the same strings in the same order),
+ *         false otherwise.
+ **/
 bool string_vector_equal(const string_vector_t *a, const string_vector_t *b);
 
 
+/**
+ * Retrieves the string at the specified index from the string vector.
+ * If the index is out of bounds, NULL is returned.
+ *
+ * @param svec The string vector from which to retrieve the string.
+ * @param index The index of the string to retrieve.
+ * @return A pointer to the string at the specified index,
+ *         or NULL if the index is out of bounds.
+ */
+static inline string_t *string_vector_get(const string_vector_t *svec, size_t index) {
+  return ((int) index > svec->top) ? NULL : svec->buf[index];
+}
+
+/**
+ * Returns the number of strings currently stored in the string vector.
+ *
+ * @param svec The string vector to query.
+ * @return The number of strings in the string vector.
+ */
+static inline size_t string_vector_len(const string_vector_t *svec) {
+  return (size_t)(svec->top + 1);
+}
+
+
+
+
+/**********************************************************************/
+
+typedef string_t * (*strfunc_t)(string_t *);
+typedef bool (*strboolfunc_t)(string_t *);
+
+/**
+ * Applies a function to each string in a string vector and creates a new vector of results.
+ *
+ * @param func The function to apply to each string in the vector.
+ * @param svec The string vector
+ * @return A pointer to a newly allocated string vectorcontaining the results of applying `func`
+ *         to each string, or NULL if memory allocation failed. The returned vector must be
+ *         deallocated using `string_vector_deepfree()`.
+ * @note The input vector `svec` is not modified, and the caller retains ownership of it.
+ **/
 string_vector_t *string_vector_map(strfunc_t func, const string_vector_t *svec);
+
+
+/**
+ * Filters the strings in a string vector object based on a filtering function.
+ *
+ * @param func The filtering function to apply to each string in the vector.
+ * @param svec The string_vector.
+ * @return A pointer to a newly allocated string vector containing the strings that satisfy
+ *         the filtering function, or NULL if memory allocation failed.
+ *         The returned vector must be deallocated using `string_vector_deepfree()`.
+ * @note The input vector `svec` is not modified, and the caller retains ownership of it.
+ **/
+string_vector_t *string_vector_filter(strboolfunc_t func, const string_vector_t *svec);
+
+
+/**
+ * Filters the strings in a string vector based on a filtering function.
+ *
+ * @param func The filtering function to apply to each string in the vector.
+ * @param svec The string_vector.
+ * @return A pointer to a newly allocated string_vector_t object containing the strings that
+ *         satisfy the filtering function, or NULL if memory allocation failed.
+ *         The returned vector must be deallocated using `string_vector_deepfree()`.
+ * @note The input vector `svec` is not modified, and the caller retains ownership of it.
+ **/
 string_vector_t *string_vector_filter(strboolfunc_t func,
 				      const string_vector_t *svec);
 
-/**********************************************************************/
 
-string_vector_t *string_split(const string_t *str, char delimiter);
-
-/**********************************************************************/
-
-
-static inline string_t *string_vector_get(const string_vector_t *svec,
-                                          size_t index) {
-  return ((int) index > svec->top) ? string_new("") : svec->buf[index];
-}
-
-static inline size_t string_vector_len(const string_vector_t *svec) {
-  return (size_t)(svec->top+1);
-}
-
-static inline char string_get(const string_t *s, size_t index) {
-  return (index < s->len) ? s->buf[index] : -1;
-}
-
-static inline string_t *string_read() {
-  return string_readfd(STDIN_FILENO);
-}
-
-static inline string_t *string_readf(FILE *stream) {
-  return string_readfd(fileno(stream));
-}
-
-
-static inline bool string_empty(const string_t *s) {
-  return s->len == 0;
-}
-
-static inline size_t string_len(const string_t *s) {
-  return s->len;
-}
-
-/**********************************************************************/
-
-static inline int string_print(const string_t *s) {
-  return  printf("%.*s", (int) s->len,s->buf);
-}
-
-static inline int string_printf(const string_t *s, FILE *f) {
-  return  fprintf(f,"%.*s", (int) s->len, s->buf);
-}
-
-static inline int string_println(const string_t *s) {
-  return printf("%.*s\n", (int) s->len, s->buf);
-}
-
-static inline int string_printlnf(const string_t *s, FILE *f) {
-  return  fprintf(f,"%.*s\n",(int) s->len, s->buf);
-}
