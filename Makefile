@@ -15,8 +15,8 @@ libstring.so: libstring.c
 	chmod -x $@
 
 install: libstring.so
-	install  libstring.so $(LIB_DIR)
-	install  libstring.h  $(INCLUDE_DIR)
+	install -m 644  libstring.so $(LIB_DIR)
+	install -m 644 libstring.h  $(INCLUDE_DIR)
 
 uninstall:
 	 $(RM)  $(LIB_DIR)/libstring.so
