@@ -1,30 +1,94 @@
-# libstring
-Libstring is an almost lightweight C library with the goal of enabling
-you to perform simple string operations without shooting yourself in
-the foot. Here are some features and reasons supporting this claim:
-
-1. Any string struct is treated as an immutable object. Consequently,
-   any return value that is a reference points to a freshly allocated
-   heap object which must be freed after usage.
-
-2. New string objects should be created using the pseudo constructors
-   `string_colored()`, `string_new()`, and `string_read()`.
-
-3. There are no NULL references, only empty strings, which makes it
-   more difficult to trigger a segfault.
-
-4. This library supports basic `map()` and `filter()` functions to
-   facilitate the implementation of string manipulation functions such
-   as `to_upper()`.
-
-5. This library also includes the `string_split()` function, which
-   divides a string into a vector of strings, thereby supporting
-   vectors of strings."
+# libstring: A Lightweight C String Library
+`libstring` is a lightweight C library designed to simplify common
+string operations while ensuring memory safety and preventing common
+pitfalls. It aims to provide an intuitive and safe interface for
+string manipulation, making it easier to work with strings in C
+programs.
 
 
-## Documentation
-Work in progress
+## Features
+
+- **Immutability**: All string structures are treated as immutable
+  objects. Any return value that is a reference points to a freshly
+  allocated heap object, which must be freed after usage.
+
+- **Safe Memory Handling**: Most of the memory allocation and deallocation are
+  handled internally, reducing the risk of memory leaks and dangling
+  pointers.
+
+- **Error Handling**: In case of an error, functions return NULL or
+  other appropriate error indicators.
+
+- **Functional Programming Support**: `libstring` includes basic
+  `map()` and `filter()` functions, enabling the implementation of
+  string manipulation functions in a functional programming style.
+
+- **String Vectors**: Support for dynamic arrays of strings, allowing
+  easy manipulation of collections of strings.
+
+## Installation
+
+To use `libstring` in your project, follow these steps:
+
+1. Clone the repository: `git clone https://github.com/your-username/libstring.git`
+2. Navigate to the repository directory: `cd libstring`
+3. Compile the library:
+
+   ```bash
+   make
+
+This will build the shared library `libstring.so`
+
+4. Install the library and header files:
+
+  ```bash
+   sudo make install
+
+This will copy libstring.so to /usr/lib and libstring.h to /usr/include.
+
+You can also generate HTML documentation using Doxygen:
+
+   ```bash
+   make html
+   
+The HTML documentation will be generated in the `html` directory.
+
+
+Uninstall the library:
+
+```bash
+   sudo make uninstall
+
+This will remove the installed `libstring.so` and `libstring.h` files.
+
+
+## Usage
+
+Here's a quick example of how to use `libstring` after the installation:
+
+```c
+#include <stdlib.h>
+#include <libstring.h>
+ 
+int main() {
+    string_t *str = string_new("Hello world!");
+
+    string_println(str);
+    free(str);
+}
 
 ## Dependencies
 * gcc     (http://gcc.gnu.org/) 
 * make    (http://www.gnu.org/software/make/)
+
+
+## License
+This project is licensed under the MIT License - see the LICENSE file
+for details.
+
+
+## Acknowledgments
+This library features an intuitive API, as its documentation was
+primarily composed by chatGPT 3.5. Therefore, I extend my gratitude to
+chatGPT from OpenAI for its contribution.
+
