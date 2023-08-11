@@ -46,6 +46,14 @@ This will copy libstring.so to /usr/lib and libstring.h to /usr/include.
 
 ## Misc
 
+- Compile the test program tst-libstring:
+   ```bash
+   make tst-libstring
+  ```
+You should run this test program to ensure that `libstring` runs
+correctly on your machine.
+
+
 - You can also generate HTML documentation using Doxygen:
 
    ```bash
