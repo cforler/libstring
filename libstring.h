@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+#define LIBSTRING_VERSION "0.1.0"
+
 #define COLOR_DEFAULT "\033[0m"
 #define COLOR_BLACK   "\033[30m"
 #define COLOR_RED     "\033[31m"
@@ -438,9 +440,6 @@ static inline size_t string_vector_len(const string_vector_t *svec) {
   return (size_t)(svec->top + 1);
 }
 
-
-
-
 /**********************************************************************/
 
 typedef string_t * (*strfunc_t)(string_t *);
@@ -486,3 +485,11 @@ string_vector_t *string_vector_filter(strboolfunc_t func,
 				      const string_vector_t *svec);
 
 
+/**********************************************************************/
+
+/**  
+ * Returns the version string of the libstring library.
+ *
+ * @return A pointer to the null-terminated version string.
+ **/
+const char *libstring_version();

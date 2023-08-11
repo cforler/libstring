@@ -309,5 +309,8 @@ string_vector_t *string_vector_filter(strboolfunc_t func,
   return res;     
 }
 
+/**********************************************************************/
 
-
+const char *libstring_version() {
+  return LIBSTRING_VERSION;
+}
