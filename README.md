@@ -32,33 +32,32 @@ To use `libstring` in your project, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/your-username/libstring.git`
 2. Navigate to the repository directory: `cd libstring`
-3. Compile the library:
-
+3. Build the shared library `libstring.so`
    ```bash
    make
-
-This will build the shared library `libstring.so`
 
 4. Install the library and header files:
 
   ```bash
    sudo make install
-
+   ```
 This will copy libstring.so to /usr/lib and libstring.h to /usr/include.
 
-You can also generate HTML documentation using Doxygen:
+
+## Misc
+
+- You can also generate HTML documentation using Doxygen:
 
    ```bash
    make html
-   
+   ```
 The HTML documentation will be generated in the `html` directory.
 
-
-Uninstall the library:
+- Uninstall the library:
 
 ```bash
    sudo make uninstall
-
+```
 This will remove the installed `libstring.so` and `libstring.h` files.
 
 
@@ -76,6 +75,7 @@ int main() {
     string_println(str);
     free(str);
 }
+```
 
 ## Dependencies
 * gcc     (http://gcc.gnu.org/) 
