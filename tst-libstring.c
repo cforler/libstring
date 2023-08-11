@@ -387,7 +387,7 @@ void test_strvec_remove2() {
   string_vector_remove(svec,0);
   string_t *s2 = string_vector_remove(svec,0);
   
-  bool result = (string_vector_len(svec) == 0) && (s2->len == 0);
+  bool result = (string_vector_len(svec) == 0) && (s2 ==NULL);
   
   verify_bool("string vector remove 2",s1,s2,result);
   string_vector_free(svec);
