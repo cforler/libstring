@@ -323,7 +323,6 @@ typedef struct st_strvec {
   string_t **buf;  
 } string_vector_t;
 
-
 /**
  * Splits a string into multiple substrings based on a delimiter character.
  *
@@ -335,6 +334,23 @@ typedef struct st_strvec {
  * @note The input string `str` is not modified, and the caller retains ownership of it.
  **/
 string_vector_t *string_split(const string_t *str, char delimiter);
+
+
+/**
+ * Splits the given string into a vector of substrings based on the provided delimiter.
+ *
+ * This function takes a string `str` and a delimiter `delimiter`. It splits the `str` into
+ * multiple substrings using the `delimiter` as a separator. The resulting substrings are
+ * stored in a dynamically allocated string vector, which should be freed after use.
+ *
+ * @param str The input string to be split.
+ * @param delimiter The delimiter string used for splitting.
+ * @return A dynamically allocated string vector containing the resulting substrings.
+ *         It should be freed after use using `string_vector_deepfree()`.
+ **/
+string_vector_t *string_ssplit(const string_t *str, string_t *delimiter);
+
+
 
 /**
  * Creates an empty string_vector.

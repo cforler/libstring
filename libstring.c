@@ -186,10 +186,9 @@ bool string_is_substring(const string_t *str, const string_t *sub, size_t off) {
 
 /**********************************************************************/
 
-
 string_vector_t *string_split(const string_t *str, char delimiter) {
   string_vector_t *svec = string_vector_empty();
-  int start = 0;
+  size_t start = 0;
   for(size_t i=0; i< string_len(str); i++)
     if(str->buf[i]==delimiter) {
       string_vector_add(svec, string_nnew(&(str->buf[start]), i-start));
@@ -198,6 +197,35 @@ string_vector_t *string_split(const string_t *str, char delimiter) {
   string_vector_add(svec, string_nnew(&(str->buf[start]), string_len(str)-start));
   return svec;
 }
+
+
+/**********************************************************************/
+
+string_vector_t *string_ssplit(const string_t *str, string_t *delimiter) {
+  string_vector_t *svec = string_vector_empty();
+  int idx = string_substring_index(str, delimiter);
+  if(idx==-1) {
+    string_vector_add(svec, string_clone(str));
+    return svec;
+  }
+  string_vector_add(svec, string_nnew(str->buf, idx));
+  idx += string_len(delimiter);  
+  
+  for(size_t i=idx; i<= string_len(str)-string_len(delimiter); i++) {
+    for(size_t j=0; str->buf[i+j] == delimiter->buf[j]; j++)
+      if( (j+1) == delimiter->len-1) {
+        string_vector_add(svec, string_nnew(&(str->buf[idx]), i-idx));
+        idx = i + string_len(delimiter);
+        i += string_len(delimiter);  
+        break;
+      }
+  }
+  if( (size_t) idx <= string_len(str))
+    string_vector_add(svec, string_nnew(&(str->buf[idx]), string_len(str)-idx));
+    
+  return svec;
+}
+
 
 /*************************************************************************
  *                           String Vector                               *
