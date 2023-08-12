@@ -478,6 +478,9 @@ void test_strvec_split1() {
 }
 
 
+/**********************************************************************/  
+
+
 void  test_strvec_split2() {
   string_t *str = string_new("Green,Blue,White,Black,Red,Yellow,Magenta");
   string_vector_t *svec = string_vector_empty();
@@ -491,6 +494,101 @@ void  test_strvec_split2() {
    
   string_vector_t *rvec = string_split(str, ',');
   verify_bool("string vector split 2",str, str, string_vector_equal(svec,rvec));
+
+  string_vector_deepfree(svec);
+  string_vector_deepfree(rvec);
+}
+
+
+
+/**********************************************************************/  
+
+void  test_strvec_split3() {
+  string_t *str = string_new("Green,Blue,White,Black,,");
+  string_vector_t *svec = string_vector_empty();
+  string_vector_add(svec, string_new("Green"));
+  string_vector_add(svec, string_new("Blue"));
+  string_vector_add(svec, string_new("White"));
+  string_vector_add(svec, string_new("Black"));
+  string_vector_add(svec, string_new(""));
+  string_vector_add(svec, string_new(""));
+   
+  string_vector_t *rvec = string_split(str, ',');
+  verify_bool("string vector split 3",str, str, string_vector_equal(svec,rvec));
+
+  string_vector_deepfree(svec);
+  string_vector_deepfree(rvec);
+}
+
+
+void  test_strvec_split4() {
+  string_t *str = string_new(",Green,Blue,White,Black,");
+  string_vector_t *svec = string_vector_empty();
+  string_vector_add(svec, string_new(""));
+  string_vector_add(svec, string_new("Green"));
+  string_vector_add(svec, string_new("Blue"));
+  string_vector_add(svec, string_new("White"));
+  string_vector_add(svec, string_new("Black"));
+  string_vector_add(svec, string_new(""));
+   
+  string_vector_t *rvec = string_split(str, ',');
+  verify_bool("string vector split 4",str, str, string_vector_equal(svec,rvec));
+
+  string_vector_deepfree(svec);
+  string_vector_deepfree(rvec);
+}
+
+/**********************************************************************/  
+
+void test_strvec_ssplit1() {
+  string_t *str = string_new("THISFOOISFOOAFOOTEST");
+  string_t *del = string_new("FOO");
+  string_vector_t *svec = string_vector_empty();
+  string_vector_add(svec, string_new("THIS"));
+  string_vector_add(svec, string_new("IS"));
+  string_vector_add(svec, string_new("A"));
+  string_vector_add(svec, string_new("TEST"));
+
+  
+  string_vector_t *rvec = string_ssplit(str, del);
+  verify_bool("string vector ssplit 1",str, del, string_vector_equal(svec,rvec));
+
+  string_vector_deepfree(svec);
+  string_vector_deepfree(rvec);
+}
+
+
+/**********************************************************************/  
+
+void test_strvec_ssplit2() {
+  string_t *str = string_new("THISFOOISFOOANFOO");
+  string_t *del = string_new("FOO");
+  string_vector_t *svec = string_vector_empty();
+  string_vector_add(svec, string_new("THIS"));
+  string_vector_add(svec, string_new("IS"));
+  string_vector_add(svec, string_new("AN"));
+  string_vector_add(svec, string_new(""));
+  
+  string_vector_t *rvec = string_ssplit(str, del);
+
+  verify_bool("string vector ssplit 2",str, del, string_vector_equal(svec,rvec));
+
+  string_vector_deepfree(svec);
+  string_vector_deepfree(rvec);
+}
+
+/**********************************************************************/  
+
+void test_strvec_ssplit3() {
+  string_t *str = string_new("I😄am😄happy");
+  string_t *del = string_new("😄");
+  string_vector_t *svec = string_vector_empty();
+  string_vector_add(svec, string_new("I"));
+  string_vector_add(svec, string_new("am"));
+  string_vector_add(svec, string_new("happy"));
+
+  string_vector_t *rvec = string_ssplit(str, del);
+  verify_bool("string vector ssplit 3",str, del, string_vector_equal(svec,rvec));
 
   string_vector_deepfree(svec);
   string_vector_deepfree(rvec);
@@ -516,6 +614,11 @@ void string_vector_tests() {
   test_strvec_filter();
   test_strvec_split1();
   test_strvec_split2();
+  test_strvec_split3();
+  test_strvec_split4();
+  test_strvec_ssplit1();
+  test_strvec_ssplit2();
+  test_strvec_ssplit3();
 }
 
 /**********************************************************************/
@@ -526,4 +629,3 @@ int main() {
   puts("");
   string_vector_tests();
 }
-
