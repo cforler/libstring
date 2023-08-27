@@ -323,7 +323,6 @@ bool string_vector_equal(const string_vector_t *a, const string_vector_t *b) {
 
 /**********************************************************************/
 
-
 string_vector_t *string_vector_map(strfunc_t func,
                                    const string_vector_t *svec) {
   if(string_vector_len(svec) == 0)  return string_vector_empty();
@@ -340,9 +339,7 @@ string_vector_t *string_vector_map(strfunc_t func,
   return res;
 }
 
-
 /**********************************************************************/
-
 
 string_vector_t *string_vector_filter(strboolfunc_t func,
                                       const string_vector_t *svec) {
@@ -355,6 +352,23 @@ string_vector_t *string_vector_filter(strboolfunc_t func,
 }
 
 /**********************************************************************/
+
+string_t *string_vector_reduce(reducefunc_t func,
+                               const string_vector_t *svec,
+                               string_t *initializer) {
+  string_t *val = (initializer) ? initializer : string_new("");
+  
+  for(int i = 0; i<= svec->top; i++) {
+    string_t *t = func(val,svec->buf[i]);
+    free(val);
+    val = t;
+  }
+  return val;
+}
+
+
+/**********************************************************************/
+
 
 const char *libstring_version() {
   return LIBSTRING_VERSION;
