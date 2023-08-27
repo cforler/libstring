@@ -21,6 +21,12 @@ bool is_upper(char c) {
   return isupper(c);
 }
 
+
+string_t * fold(string_t *s1, string_t *s2) {
+  return string_concat(s1,s2);
+}
+
+
 /***********************************************************************/
 /***********************************************************************/
 
@@ -625,7 +631,33 @@ void test_strvec_ssplit3() {
   string_vector_deepfree(rvec);
 }
 
+/**********************************************************************/  
 
+void test_strvec_reduce1() {
+  string_vector_t *svec = string_vector_empty();
+  string_vector_add(svec, string_new("Foo"));
+  string_vector_add(svec, string_new("Bar"));
+  string_vector_add(svec, string_new("Foobar"));
+  string_t *s1 = string_new("FooBarFoobar");
+  string_t *s2 = string_vector_reduce(fold, svec, NULL);
+  verify("string vector reduce 1",s1,s2);
+  string_vector_deepfree(svec);
+}
+
+/**********************************************************************/  
+
+void test_strvec_reduce2() {
+  string_vector_t *svec = string_vector_empty();
+  string_vector_add(svec, string_new("Foo"));
+  string_vector_add(svec, string_new("Bar"));
+  string_vector_add(svec, string_new("Foobar"));
+  string_t *init = string_new("FNORD");
+  string_t *s1 = string_new("FNORDFooBarFoobar");
+  string_t *s2 = string_vector_reduce(fold, svec, init);
+  verify("string vector reduce 2",s1,s2);
+  free(init);
+  string_vector_deepfree(svec);
+}
 /**********************************************************************/  
 
 void string_vector_tests() {
@@ -650,6 +682,8 @@ void string_vector_tests() {
   test_strvec_ssplit1();
   test_strvec_ssplit2();
   test_strvec_ssplit3();
+  test_strvec_reduce1();
+  test_strvec_reduce2();
 }
 
 /**********************************************************************/
