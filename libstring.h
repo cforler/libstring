@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-#define LIBSTRING_VERSION "0.1.1"
+#define LIBSTRING_VERSION "0.1.2"
 
 #define COLOR_DEFAULT "\033[0m"
 #define COLOR_BLACK   "\033[30m"
