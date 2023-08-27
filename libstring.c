@@ -356,7 +356,7 @@ string_vector_t *string_vector_filter(strboolfunc_t func,
 string_t *string_vector_reduce(reducefunc_t func,
                                const string_vector_t *svec,
                                string_t *initializer) {
-  string_t *val = (initializer) ? initializer : string_new("");
+  string_t *val = (initializer) ? string_clone(initializer) : string_new("");
   
   for(int i = 0; i<= svec->top; i++) {
     string_t *t = func(val,svec->buf[i]);
