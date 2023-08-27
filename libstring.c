@@ -154,6 +154,23 @@ string_t *string_substring(const string_t *str, size_t start, size_t end){
 
 /**********************************************************************/
 
+string_t *string_repeat(const string_t *str, size_t times) {
+  size_t n =  str->len * times;
+  if( unlikely(!n)) return string_new("");
+  
+  string_t *s = malloc(sizeof(string_t) + n);
+  if( unlikely(!s)) return NULL;
+  
+  s->len = n;
+  for(size_t i=0; i < times; i++)
+    memcpy(&(s->buf[i*(str->len)]), str->buf, str->len);
+  
+  return s;
+}
+
+
+/**********************************************************************/
+
 char *string_tocstr(const string_t *str) {
   char *cstr = malloc(str->len +1);
   if( unlikely(cstr==NULL)) return NULL;
@@ -301,7 +318,7 @@ string_t *string_vector_remove(string_vector_t *svec, size_t index) {
 bool string_vector_equal(const string_vector_t *a, const string_vector_t *b) {
   if(a->top != b->top) return false;
   for(int i=0;i<=a->top;i++) if(!string_equal(a->buf[i],b->buf[i])) return false;
-  return true;  
+  return true;   
 }
 
 /**********************************************************************/

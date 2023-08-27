@@ -24,7 +24,6 @@ typedef struct {
   char buf[];
 } string_t;
 
-
 /**
  * Creates a new colored string_t initialized with the provided character array.
  *
@@ -177,7 +176,22 @@ int   string_substring_index(const string_t *str, const string_t *substring);
  * @param off The offset within the input string to start the search.
  * @return True if the substring appears in the input string at the specified offset, false otherwise.
  */
-bool  string_is_substring(const string_t *str, const string_t *sub, size_t off);
+bool string_is_substring(const string_t *str, const string_t *sub, size_t off);
+
+
+/**
+ * Creates a new string by repeating the input string multiple times.
+ *
+ * This function takes an input string `str` and a `times` parameter. It creates a new
+ * string by repeating the input `str` `times` times. The returned C string must be
+ * deallocated using the standard C library function `free()`.
+ *
+ * @param str The input string to be repeated.
+ * @param times The number of times to repeat the input string, or NULL if memory
+ *        allocation failed.
+ * @return A dynamically allocated string containing the repeated input string.
+ **/
+string_t *string_repeat(const string_t *str, size_t times);
 
 
 /**
@@ -280,6 +294,8 @@ static inline int string_println(const string_t *s) {
 static inline int string_printlnf(const string_t *s, FILE *f) {
   return fprintf(f, "%.*s\n", (int) s->len, s->buf);
 }
+
+
 
 /**********************************************************************/
 
