@@ -257,6 +257,34 @@ void tst_readline() {
   verify("readline", s1, s2);
 }
 
+/***********************************************************************/
+
+void tst_repeat1() {
+  string_t *s1 = string_new("Hello World!");
+  string_t *s2 = string_repeat(s1,1);
+  verify("repeat 1", s1, s2);
+}
+
+/***********************************************************************/
+
+void tst_repeat2() {
+  string_t *s1 = string_new("Foo");
+  string_t *s2 = string_new("FooFooFooFooFoo");
+  string_t *s3 = string_repeat(s1,5);
+  verify("repeat 2", s2, s3);
+  free(s1);
+}
+
+/***********************************************************************/
+
+void tst_repeat3() {
+  string_t *s1 = string_new("Hello World!");
+  string_t *s2 = string_new("");
+  string_t *s3 = string_repeat(s1,0);
+  verify("repeat 3", s2, s3);
+  free(s1);
+}
+
 
 /***********************************************************************/
 
@@ -285,7 +313,10 @@ void string_tests() {
   tst_is_substring1();
   tst_is_substring2();
   tst_readline();
-}
+  tst_repeat1();
+  tst_repeat2();
+  tst_repeat3();
+  }
 
 /**********************************************************************/
 /**********************************************************************/
