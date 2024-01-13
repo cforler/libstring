@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-#define LIBSTRING_VERSION "0.1.2"
+#define LIBSTRING_VERSION "0.1.3"
 
 #define COLOR_DEFAULT "\033[0m"
 #define COLOR_BLACK   "\033[30m"
@@ -199,6 +199,34 @@ bool string_is_substring(const string_t *str, const string_t *sub, size_t off);
 string_t *string_repeat(const string_t *str, size_t times);
 
 
+/**
+ * Creates a new string where all occurrences of the 'old' character
+ * in the input string are replaced with the 'new' character.
+ *
+ * @param str The input string.
+ * @param old The character to be replaced.
+ * @param new The character to replace occurrences of 'old'.
+ * @return A new string with replaced characters. Must be freed after use.
+ * @note The returned string is allocated on the heap and must be freed by the caller.
+ * @note If 'old' is not found in the input string, the function returns a copy of the input string.
+ **/
+string_t *string_replace_char(const string_t *str, char old, char new);
+
+
+
+ /* Creates a new string where all occurrences of the 'old' substring
+ * in the input string are replaced with the 'new' substring.
+ *
+ * @param str The input string.
+ * @param old The substring to be replaced.
+ * @param new The substring to replace occurrences of 'old'.
+ * @return A new string with replaced substrings. Must be freed after use.
+ * @note The returned string is allocated on the heap and must be freed by the caller.
+ * @note If 'old' is not found in the input string, the function returns a copy of the input string.
+ **/
+string_t *string_replace(const string_t *str, const string_t *old, const string_t *new);
+
+  
 /**
  * Returns the character at the specified index in the string.
  *

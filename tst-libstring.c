@@ -291,6 +291,89 @@ void tst_repeat3() {
   free(s1);
 }
 
+/***********************************************************************/
+
+void tst_replacec1() {
+  string_t *s1 = string_new("Hello World!");
+  string_t *s2 = string_new("Hallo World!");
+  string_t *s3 = string_replace_char(s1,'e', 'a');
+  verify("replace char 1", s2, s3);
+  free(s1);
+}
+
+/***********************************************************************/
+
+void tst_replacec2() {
+  string_t *s1 = string_new("Hello World!");
+  string_t *s2 = string_replace_char(s1,'e', 'e');
+  verify("replace char 2", s1, s2);
+}
+
+/***********************************************************************/
+
+void tst_replacec3() {
+  string_t *s1 = string_new("aabbccaabb");
+  string_t *s2 = string_new("bbbbccbbbb");
+  string_t *s3 = string_replace_char(s1,'a', 'b');
+  verify("replace char 3", s2, s3);
+  free(s1);
+}
+
+/***********************************************************************/
+
+void tst_replace1() {
+  string_t *s1 = string_new("Hello World!");
+  string_t *s2 = string_new("Hallo World!");
+  string_t *old = string_new("e");
+  string_t *new = string_new("a");
+  string_t *s3 = string_replace(s1, old, new);
+  verify("replace 1", s2, s3);
+  free(s1);
+  free(old);
+  free(new);
+}
+
+/***********************************************************************/
+
+void tst_replace2() {
+  string_t *s1 = string_new("Hello World!");
+  string_t *old = string_new("aaa");
+  string_t *new = string_new("bb");
+  string_t *s2 = string_replace(s1, old, new); 
+  verify("replace 2", s1, s2);
+  free(old);
+  free(new);
+}
+
+
+/***********************************************************************/
+
+void tst_replace3() {
+  string_t *s1 = string_new("aabbccaabb");
+  string_t *s2 = string_new("bbbccbbb");
+  string_t *old = string_new("aa");
+  string_t *new = string_new("b");
+  string_t *s3 = string_replace(s1, old, new);
+  verify("replace 3", s2, s3);
+  free(s1);
+  free(old);
+  free(new);
+}
+
+/***********************************************************************/
+
+void tst_replace4() {
+  string_t *s1 = string_new("aaaaaaaaa");
+  string_t *s2 = string_new("abcdabcdabcd");
+  string_t *old = string_new("aaa");
+  string_t *new = string_new("abcd");
+  string_t *s3 = string_replace(s1, old, new);
+  verify("replace 4", s2, s3);
+  free(s1);
+  free(old);
+  free(new);
+}
+
 
 /***********************************************************************/
 
@@ -322,7 +405,14 @@ void string_tests() {
   tst_repeat1();
   tst_repeat2();
   tst_repeat3();
-  }
+  tst_replacec1();
+  tst_replacec2();
+  tst_replacec3();
+  tst_replace1();
+  tst_replace2();
+  tst_replace3();
+  tst_replace4();
+}
 
 /**********************************************************************/
 /**********************************************************************/

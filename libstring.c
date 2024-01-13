@@ -168,8 +168,8 @@ string_t *string_repeat(const string_t *str, size_t times) {
   return s;
 }
 
-
 /**********************************************************************/
+
 
 char *string_tocstr(const string_t *str) {
   char *cstr = malloc(str->len +1);
@@ -181,16 +181,24 @@ char *string_tocstr(const string_t *str) {
 
 /**********************************************************************/
 
-int string_substring_index(const string_t *str, const string_t *substring) {
-  if(unlikely(substring->len == 0)) return 0;
-  if(unlikely(substring->len > str->len)) return -1;
-  
-  for(size_t i=0; i< str->len - substring->len; i++) 
-    for(size_t j=0; str->buf[i+j] == substring->buf[j]; j++)
-      if( (j+1) == substring->len-1) return i;
-  
+static int string_substring_index_offset(const string_t *str, const string_t *substring, size_t offset) {
+  if(unlikely(substring->len == 0)) return offset;
+  if(unlikely(substring->len > (str->len - offset) )) return -1;
+
+  for(size_t i=offset; i<= str->len - substring->len; i++) {
+    for(size_t j=0; j < substring->len; j++) {
+      if(str->buf[i+j] != substring->buf[j]) break;
+      if( (j+1) == substring->len) return i;
+    }
+  }
   return -1;
 }
+
+
+int string_substring_index(const string_t *str, const string_t *substring) {
+  return string_substring_index_offset(str,substring, 0);
+}
+
 
 /**********************************************************************/
 
@@ -200,6 +208,62 @@ bool string_is_substring(const string_t *str, const string_t *sub, size_t off) {
   return strncmp(&(str->buf[off]), sub->buf, sub->len) ? false : true;
   
 }
+
+
+
+/**********************************************************************/
+
+string_t *string_replace_char(const string_t *str, char old, char new) {
+  string_t *s =  string_clone(str);
+
+  for(size_t i=0; i < s->len; i++) 
+    s->buf[i] = (s->buf[i] == old) ? new : s->buf[i];
+
+  return s;
+}
+
+
+/**********************************************************************/
+
+/*
+ * Implementation of the string_replace() function is based on the
+ * suggestion by OpenAI's GPT-3.5
+ */
+
+string_t *string_replace(const string_t *str, const string_t *old, const string_t *new) {
+  size_t n = 0;
+  int offset = 0;
+  
+  while( (offset = string_substring_index_offset(str, old, offset)) > -1  ) {
+    offset+=old->len;
+    n += 1;
+  }
+  
+  if(n==0) return string_clone(str);
+  size_t len =  str->len + n * (new->len - old->len);
+  string_t *s = malloc(sizeof(string_t) + len);
+  s->len = len;  
+  
+  char *t = s->buf;
+  int curr = 0;
+  offset=0;
+  while(n--) {
+    offset = string_substring_index_offset(str, old, offset);
+    memcpy(t, str->buf+curr, offset-curr);
+    t += offset-curr;
+
+    memcpy(t, new->buf, new->len);
+    t += new->len;
+    curr = offset + old->len;
+    offset+=old->len;
+  }
+  memcpy(t, str->buf+curr, str->len-curr);
+  
+  
+  return s;
+}
+  
+
 
 /**********************************************************************/
 
