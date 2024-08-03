@@ -1,7 +1,7 @@
 CFLAGS += -W -Wall -Wextra -Werror -L. -finline-small-functions
 
-INCLUDE_DIR = /usr/include
-LIB_DIR = /usr/lib
+INCLUDE_DIR = /usr/local/include
+LIB_DIR = /usr/local/lib
 
 main: shared tst-libstring
 
