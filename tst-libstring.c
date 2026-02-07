@@ -1,57 +1,49 @@
-#include <stdlib.h>
+#include <assert.h>
 #include <ctype.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <assert.h>
 
 #include "libstring.h"
 
 #define IDENT 25
-#define PASSED  printf("%s %s %s\n", COLOR_GREEN, "PASSED", COLOR_DEFAULT)
-#define FAILED  printf("%s %s %s\n", COLOR_RED,   "FAILED", COLOR_DEFAULT)
+#define PASSED printf("%s %s %s\n", COLOR_GREEN, "PASSED", COLOR_DEFAULT)
+#define FAILED printf("%s %s %s\n", COLOR_RED, "FAILED", COLOR_DEFAULT)
 
 /***********************************************************************/
 /***********************************************************************/
 
-char to_upper(char c) {
-  return (char) toupper(c);
-}
+char to_upper(char c) { return (char)toupper(c); }
 
-bool is_upper(char c) {
-  return isupper(c);
-}
+bool is_upper(char c) { return isupper(c); }
 
-
-string_t * fold(string_t *s1, string_t *s2) {
-  return string_concat(s1,s2);
-}
-
+string_t *fold(string_t *s1, string_t *s2) { return string_concat(s1, s2); }
 
 /***********************************************************************/
 /***********************************************************************/
 
 static void verify_bool(const char *name, string_t *s1, string_t *s2, bool b) {
-  printf("Test %s: %*s",name, (int)(IDENT-strlen(name)),"");
+  printf("Test %s: %*s", name, (int)(IDENT - strlen(name)), "");
   b ? PASSED : FAILED;
-  if(s1 != s2)  free(s2);
+  if (s1 != s2)
+    free(s2);
   free(s1);
 }
-
 
 /***********************************************************************/
 
 static void verify(const char *name, string_t *s1, string_t *s2) {
-  verify_bool(name,s1,s2, string_equal(s1,s2));
+  verify_bool(name, s1, s2, string_equal(s1, s2));
 }
 
 /***********************************************************************/
-           
+
 static void verify_neg(const char *name, string_t *s1, string_t *s2) {
-  verify_bool(name,s1,s2, !string_equal(s1,s2));
+  verify_bool(name, s1, s2, !string_equal(s1, s2));
 }
 
 /***********************************************************************/
-                  
+
 void tst_colored() {
   string_t *s = string_colored("String tests", CYAN);
   string_println(s);
@@ -63,8 +55,8 @@ void tst_colored() {
 void tst_concat1() {
   string_t *s1 = string_new("Hello ");
   string_t *s2 = string_new("World");
-  string_t *s = string_concat(s1,s2);
-  verify("concat 1",s,string_new("Hello World"));
+  string_t *s = string_concat(s1, s2);
+  verify("concat 1", s, string_new("Hello World"));
 
   free(s1);
   free(s2);
@@ -75,8 +67,8 @@ void tst_concat1() {
 void tst_concat2() {
   string_t *s1 = string_new("🤔🙏");
   string_t *s2 = string_new("👍");
-  string_t *s = string_concat(s1,s2);
-  verify("concat 2",s,string_new("🤔🙏👍"));
+  string_t *s = string_concat(s1, s2);
+  verify("concat 2", s, string_new("🤔🙏👍"));
   free(s1);
   free(s2);
 }
@@ -110,7 +102,7 @@ void tst_map() {
   verify("map", s2, string_new("HELLO WORLD!"));
   free(s1);
 }
-                
+
 /***********************************************************************/
 
 void tst_filter() {
@@ -135,13 +127,11 @@ void tst_equal2() {
   verify_neg("equal 2", s1, s2);
 }
 
-
 void tst_equal3() {
   string_t *s1 = string_new("Hello World! ");
   string_t *s2 = string_new("Hello World!");
   verify_neg("equal 3", s1, s2);
 }
-
 
 void tst_equal4() {
   string_t *s1 = string_new("");
@@ -160,25 +150,25 @@ void tst_equal5() {
 void tst_compare1() {
   string_t *s1 = string_new("ABC");
   string_t *s2 = string_new("ABC");
-  verify_bool("compare 1", s1, s2, string_compare(s1,s2) == 0);
+  verify_bool("compare 1", s1, s2, string_compare(s1, s2) == 0);
 }
 
 void tst_compare2() {
   string_t *s1 = string_new("Hello");
   string_t *s2 = string_new("Hallo");
-  verify_bool("compare 2", s1, s2, string_compare(s1,s2) > 0);
+  verify_bool("compare 2", s1, s2, string_compare(s1, s2) > 0);
 }
 
 void tst_compare3() {
   string_t *s1 = string_new("ABCD");
   string_t *s2 = string_new("ABCDE");
-  verify_bool("compare 3", s1, s2, string_compare(s1,s2) < 0);
+  verify_bool("compare 3", s1, s2, string_compare(s1, s2) < 0);
 }
 
 void tst_compare4() {
   string_t *s1 = string_new("");
   string_t *s2 = string_new("");
-  verify_bool("compare 4", s1, s2, string_compare(s1,s2) == 0);
+  verify_bool("compare 4", s1, s2, string_compare(s1, s2) == 0);
 }
 
 /***********************************************************************/
@@ -189,9 +179,9 @@ void tst_readfd() {
 
   string_t *s1 = string_new("Hello World!");
   char *s = string_tocstr(s1);
-  assert(write(pfd[1], s, strlen(s)) == (ssize_t) strlen(s)) ;
+  assert(write(pfd[1], s, strlen(s)) == (ssize_t)strlen(s));
   string_t *s2 = string_readfd(pfd[0]);
-  
+
   verify("readfd", s1, s2);
   close(pfd[0]);
   close(pfd[1]);
@@ -202,7 +192,7 @@ void tst_readfd() {
 
 void tst_substring() {
   string_t *s1 = string_new("Hello World!");
-  string_t *s2 = string_substring(s1,6,10);
+  string_t *s2 = string_substring(s1, 6, 10);
   verify("substring", s2, string_new("World"));
   free(s1);
 }
@@ -212,30 +202,29 @@ void tst_substring() {
 void tst_substring_index1() {
   string_t *s1 = string_new("Hello World!");
   string_t *s2 = string_new("World");
-  int r = string_substring_index(s1,s2);
-  verify_bool("substring index 1", s1, s2, r==6);
+  int r = string_substring_index(s1, s2);
+  verify_bool("substring index 1", s1, s2, r == 6);
 }
-
 
 void tst_substring_index2() {
   string_t *s1 = string_new("Hello World!");
   string_t *s2 = string_new("World");
-  int r = string_substring_index(s2,s1);
-  verify_bool("substring index 1", s1, s2, r==-1);
+  int r = string_substring_index(s2, s1);
+  verify_bool("substring index 1", s1, s2, r == -1);
 }
 
 void tst_substring_index3() {
   string_t *s1 = string_new("Hello World!");
   string_t *s2 = string_new("Hallo");
-  int r = string_substring_index(s2,s1);
-  verify_bool("substring index 3", s1, s2, r==-1);
+  int r = string_substring_index(s2, s1);
+  verify_bool("substring index 3", s1, s2, r == -1);
 }
 
 void tst_substring_index4() {
   string_t *s1 = string_new("");
   string_t *s2 = string_new("");
-  int r = string_substring_index(s2,s1);
-  verify_bool("substring index 4", s1, s2, r==0);
+  int r = string_substring_index(s2, s1);
+  verify_bool("substring index 4", s1, s2, r == 0);
 }
 
 /***********************************************************************/
@@ -243,20 +232,19 @@ void tst_substring_index4() {
 void tst_is_substring1() {
   string_t *s1 = string_new("Hello World!");
   string_t *s2 = string_new("World");
-  verify_bool("is substring 1", s1, s2, string_is_substring(s1,s2,6));
+  verify_bool("is substring 1", s1, s2, string_is_substring(s1, s2, 6));
 }
-
 
 void tst_is_substring2() {
   string_t *s1 = string_new("Hello World!");
   string_t *s2 = string_new("World");
-  verify_bool("is substring 2", s1, s2, !string_is_substring(s1,s2,2));
+  verify_bool("is substring 2", s1, s2, !string_is_substring(s1, s2, 2));
 }
 
 /***********************************************************************/
 
 void tst_readline() {
-  string_t *s1 = string_new("#include <stdlib.h>");
+  string_t *s1 = string_new("#include <assert.h>");
   FILE *f = fopen("tst-libstring.c", "r");
   string_t *s2 = string_readline(f);
   fclose(f);
@@ -267,7 +255,7 @@ void tst_readline() {
 
 void tst_repeat1() {
   string_t *s1 = string_new("Hello World!");
-  string_t *s2 = string_repeat(s1,1);
+  string_t *s2 = string_repeat(s1, 1);
   verify("repeat 1", s1, s2);
 }
 
@@ -276,7 +264,7 @@ void tst_repeat1() {
 void tst_repeat2() {
   string_t *s1 = string_new("Foo");
   string_t *s2 = string_new("FooFooFooFooFoo");
-  string_t *s3 = string_repeat(s1,5);
+  string_t *s3 = string_repeat(s1, 5);
   verify("repeat 2", s2, s3);
   free(s1);
 }
@@ -286,7 +274,7 @@ void tst_repeat2() {
 void tst_repeat3() {
   string_t *s1 = string_new("Hello World!");
   string_t *s2 = string_new("");
-  string_t *s3 = string_repeat(s1,0);
+  string_t *s3 = string_repeat(s1, 0);
   verify("repeat 3", s2, s3);
   free(s1);
 }
@@ -296,7 +284,7 @@ void tst_repeat3() {
 void tst_replacec1() {
   string_t *s1 = string_new("Hello World!");
   string_t *s2 = string_new("Hallo World!");
-  string_t *s3 = string_replace_char(s1,'e', 'a');
+  string_t *s3 = string_replace_char(s1, 'e', 'a');
   verify("replace char 1", s2, s3);
   free(s1);
 }
@@ -305,7 +293,7 @@ void tst_replacec1() {
 
 void tst_replacec2() {
   string_t *s1 = string_new("Hello World!");
-  string_t *s2 = string_replace_char(s1,'e', 'e');
+  string_t *s2 = string_replace_char(s1, 'e', 'e');
   verify("replace char 2", s1, s2);
 }
 
@@ -314,7 +302,7 @@ void tst_replacec2() {
 void tst_replacec3() {
   string_t *s1 = string_new("aabbccaabb");
   string_t *s2 = string_new("bbbbccbbbb");
-  string_t *s3 = string_replace_char(s1,'a', 'b');
+  string_t *s3 = string_replace_char(s1, 'a', 'b');
   verify("replace char 3", s2, s3);
   free(s1);
 }
@@ -339,12 +327,11 @@ void tst_replace2() {
   string_t *s1 = string_new("Hello World!");
   string_t *old = string_new("aaa");
   string_t *new = string_new("bb");
-  string_t *s2 = string_replace(s1, old, new); 
+  string_t *s2 = string_replace(s1, old, new);
   verify("replace 2", s1, s2);
   free(old);
   free(new);
 }
-
 
 /***********************************************************************/
 
@@ -373,7 +360,6 @@ void tst_replace4() {
   free(old);
   free(new);
 }
-
 
 /***********************************************************************/
 
@@ -418,12 +404,14 @@ void string_tests() {
 /**********************************************************************/
 
 void test_strvec_new() {
-  char *name =  "string vector new";
+  char *name = "string vector new";
   string_t *str = string_new("Hello World!");
   string_vector_t *svec = string_vector_new(str);
-  printf("Test %s: %*s",name, (int)(IDENT-strlen(name)),"");
-  if((string_vector_len(svec) == 1) && (svec->buf[0] == str)) PASSED;
-  else FAILED;  
+  printf("Test %s: %*s", name, (int)(IDENT - strlen(name)), "");
+  if ((string_vector_len(svec) == 1) && (svec->buf[0] == str))
+    PASSED;
+  else
+    FAILED;
   free(str);
   string_vector_free(svec);
 }
@@ -435,38 +423,37 @@ void test_strvec_add() {
   string_t *s2 = string_new("World");
   string_vector_t *svec = string_vector_new(s1);
   string_vector_add(svec, s2);
-  bool result = (string_vector_len(svec) == 2) &&
-    (svec->buf[0] == s1) && (svec->buf[1] == s2);
-  verify_bool("string vector add",s1,s2,result);
+  bool result = (string_vector_len(svec) == 2) && (svec->buf[0] == s1) &&
+    (svec->buf[1] == s2);
+  verify_bool("string vector add", s1, s2, result);
   string_vector_free(svec);
 }
 
 /**********************************************************************/
 
 void test_strvec_resize() {
-  char *name =  "string vector resize";
-  
+  char *name = "string vector resize";
+
   string_t *str = string_new("Hello");
   string_vector_t *svec = string_vector_new(str);
-  
+
   size_t cap = svec->cap;
-  
-  for(size_t i=0;i<2*cap;i++) 
+
+  for (size_t i = 0; i < 2 * cap; i++)
     string_vector_add(svec, str);
 
-  bool result = 4*cap == svec->cap;
+  bool result = 4 * cap == svec->cap;
 
-  for(size_t i=0;i<2*cap;i++) 
+  for (size_t i = 0; i < 2 * cap; i++)
     if (svec->buf[i] != str) {
       result = false;
       break;
     }
-  
-  printf("Test %s: %*s",name, (int)(IDENT-strlen(name)),"");
-  result ? PASSED : FAILED;  
+
+  printf("Test %s: %*s", name, (int)(IDENT - strlen(name)), "");
+  result ? PASSED : FAILED;
   free(str);
   string_vector_free(svec);
-  
 }
 
 /**********************************************************************/
@@ -477,11 +464,10 @@ void test_strvec_find1() {
   string_vector_t *svec = string_vector_new(s1);
   string_vector_add(svec, s2);
 
-  
-  verify_bool("string vector find 1",s1,s2, string_vector_find(svec,s2) == 1);
+  verify_bool("string vector find 1", s1, s2,
+              string_vector_find(svec, s2) == 1);
   string_vector_free(svec);
 }
-
 
 /**********************************************************************/
 
@@ -491,7 +477,8 @@ void test_strvec_find2() {
   string_vector_t *svec = string_vector_new(s1);
   string_vector_add(svec, s1);
 
-  verify_bool("string vector find 2",s1,s2, string_vector_find(svec,s2) == -1);
+  verify_bool("string vector find 2", s1, s2,
+              string_vector_find(svec, s2) == -1);
   string_vector_free(svec);
 }
 
@@ -500,23 +487,22 @@ void test_strvec_find2() {
 void test_strvec_remove1() {
   string_t *s1 = string_new("Hello");
   string_vector_t *svec = string_vector_new(s1);
-  string_t *s2 = string_vector_remove(svec,0);
+  string_t *s2 = string_vector_remove(svec, 0);
 
   bool result = (string_vector_len(svec) == 0) && (s1 == s2);
-  verify_bool("string vector remove 1",s1,s2,result);
+  verify_bool("string vector remove 1", s1, s2, result);
   string_vector_free(svec);
 }
-
 
 void test_strvec_remove2() {
   string_t *s1 = string_new("Hello");
   string_vector_t *svec = string_vector_new(s1);
-  string_vector_remove(svec,0);
-  string_t *s2 = string_vector_remove(svec,0);
-  
-  bool result = (string_vector_len(svec) == 0) && (s2 ==NULL);
-  
-  verify_bool("string vector remove 2",s1,s2,result);
+  string_vector_remove(svec, 0);
+  string_t *s2 = string_vector_remove(svec, 0);
+
+  bool result = (string_vector_len(svec) == 0) && (s2 == NULL);
+
+  verify_bool("string vector remove 2", s1, s2, result);
   string_vector_free(svec);
 }
 
@@ -531,12 +517,13 @@ void test_strvec_remove3() {
   string_vector_add(svec, s3);
   string_vector_add(svec, s4);
 
-  string_vector_remove(svec,1);
+  string_vector_remove(svec, 1);
 
-  bool result = (string_vector_len(svec)==3) &&  (string_vector_get(svec, 0) == s1)
-    &&  (string_vector_get(svec, 1) == s3)   &&  (string_vector_get(svec, 2) == s4);
-  
-  verify_bool("string vector remove 3",s1,s2,result);
+  bool result =
+    (string_vector_len(svec) == 3) && (string_vector_get(svec, 0) == s1) &&
+    (string_vector_get(svec, 1) == s3) && (string_vector_get(svec, 2) == s4);
+
+  verify_bool("string vector remove 3", s1, s2, result);
 
   free(s3);
   free(s4);
@@ -545,70 +532,67 @@ void test_strvec_remove3() {
 
 /**********************************************************************/
 
-
-string_t * strtoupper(string_t *str) {
-  return string_map(to_upper, str);
-}
-
+string_t *strtoupper(string_t *str) { return string_map(to_upper, str); }
 
 void test_strvec_map() {
-   string_t *s1 = string_new("Hello ");
-   string_t *s2 = string_new("World!");
-   string_t *r1 = string_new("HELLO ");
-   string_t *r2 = string_new("WORLD!");
-   string_vector_t *svec = string_vector_new(s1);
-   string_vector_add(svec, s2);
-   string_vector_t *rvec = string_vector_map(strtoupper, svec);
+  string_t *s1 = string_new("Hello ");
+  string_t *s2 = string_new("World!");
+  string_t *r1 = string_new("HELLO ");
+  string_t *r2 = string_new("WORLD!");
+  string_vector_t *svec = string_vector_new(s1);
+  string_vector_add(svec, s2);
+  string_vector_t *rvec = string_vector_map(strtoupper, svec);
 
-   bool result = string_equal(rvec->buf[0],r1) && string_equal(rvec->buf[1],r2);
-   verify_bool("string vector map",s1,s2,result);
-   free(r1);
-   free(r2);
-   string_vector_free(svec);
-   string_vector_deepfree(rvec);
+  bool result =
+    string_equal(rvec->buf[0], r1) && string_equal(rvec->buf[1], r2);
+  verify_bool("string vector map", s1, s2, result);
+  free(r1);
+  free(r2);
+  string_vector_free(svec);
+  string_vector_deepfree(rvec);
 }
 
 /**********************************************************************/
 
 bool strisupper(string_t *str) {
-  for(size_t i=0; i < string_len(str); i++) 
-    if(!isupper(str->buf[i])) return false;
-  
+  for (size_t i = 0; i < string_len(str); i++)
+    if (!isupper(str->buf[i]))
+      return false;
+
   return true;
 }
 
-
 void test_strvec_filter() {
-   string_t *s1 = string_new("Hello");
-   string_t *s2 = string_new("WORLD");
-   string_vector_t *svec = string_vector_new(s1);
-   string_vector_add(svec, s2);
-   string_vector_t *rvec = string_vector_filter(strisupper, svec);
+  string_t *s1 = string_new("Hello");
+  string_t *s2 = string_new("WORLD");
+  string_vector_t *svec = string_vector_new(s1);
+  string_vector_add(svec, s2);
+  string_vector_t *rvec = string_vector_filter(strisupper, svec);
 
-   bool result = (string_vector_len(rvec)==1) && string_equal(rvec->buf[0],s2);
-   verify_bool("string vector map",s1,s2,result);
+  bool result =
+    (string_vector_len(rvec) == 1) && string_equal(rvec->buf[0], s2);
+  verify_bool("string vector map", s1, s2, result);
 
-   string_vector_free(svec);
-   string_vector_deepfree(rvec);
+  string_vector_free(svec);
+  string_vector_deepfree(rvec);
 }
 
-/**********************************************************************/  
+/**********************************************************************/
 
 void test_strvec_split1() {
   string_t *str = string_new("Green,Blue,White,Black,Red,Yellow,Magenta");
   string_vector_t *svec = string_split(str, ';');
 
-  bool result = (string_vector_len(svec)==1) && string_equal(svec->buf[0],str);
-  verify_bool("string vector split 1",str, str, result);
-  
+  bool result =
+    (string_vector_len(svec) == 1) && string_equal(svec->buf[0], str);
+  verify_bool("string vector split 1", str, str, result);
+
   string_vector_deepfree(svec);
 }
 
+/**********************************************************************/
 
-/**********************************************************************/  
-
-
-void  test_strvec_split2() {
+void test_strvec_split2() {
   string_t *str = string_new("Green,Blue,White,Black,Red,Yellow,Magenta");
   string_vector_t *svec = string_vector_empty();
   string_vector_add(svec, string_new("Green"));
@@ -618,19 +602,18 @@ void  test_strvec_split2() {
   string_vector_add(svec, string_new("Red"));
   string_vector_add(svec, string_new("Yellow"));
   string_vector_add(svec, string_new("Magenta"));
-   
+
   string_vector_t *rvec = string_split(str, ',');
-  verify_bool("string vector split 2",str, str, string_vector_equal(svec,rvec));
+  verify_bool("string vector split 2", str, str,
+              string_vector_equal(svec, rvec));
 
   string_vector_deepfree(svec);
   string_vector_deepfree(rvec);
 }
 
+/**********************************************************************/
 
-
-/**********************************************************************/  
-
-void  test_strvec_split3() {
+void test_strvec_split3() {
   string_t *str = string_new("Green,Blue,White,Black,,");
   string_vector_t *svec = string_vector_empty();
   string_vector_add(svec, string_new("Green"));
@@ -639,16 +622,16 @@ void  test_strvec_split3() {
   string_vector_add(svec, string_new("Black"));
   string_vector_add(svec, string_new(""));
   string_vector_add(svec, string_new(""));
-   
+
   string_vector_t *rvec = string_split(str, ',');
-  verify_bool("string vector split 3",str, str, string_vector_equal(svec,rvec));
+  verify_bool("string vector split 3", str, str,
+              string_vector_equal(svec, rvec));
 
   string_vector_deepfree(svec);
   string_vector_deepfree(rvec);
 }
 
-
-void  test_strvec_split4() {
+void test_strvec_split4() {
   string_t *str = string_new(",Green,Blue,White,Black,");
   string_vector_t *svec = string_vector_empty();
   string_vector_add(svec, string_new(""));
@@ -657,15 +640,16 @@ void  test_strvec_split4() {
   string_vector_add(svec, string_new("White"));
   string_vector_add(svec, string_new("Black"));
   string_vector_add(svec, string_new(""));
-   
+
   string_vector_t *rvec = string_split(str, ',');
-  verify_bool("string vector split 4",str, str, string_vector_equal(svec,rvec));
+  verify_bool("string vector split 4", str, str,
+              string_vector_equal(svec, rvec));
 
   string_vector_deepfree(svec);
   string_vector_deepfree(rvec);
 }
 
-/**********************************************************************/  
+/**********************************************************************/
 
 void test_strvec_ssplit1() {
   string_t *str = string_new("THISFOOISFOOAFOOTEST");
@@ -676,16 +660,15 @@ void test_strvec_ssplit1() {
   string_vector_add(svec, string_new("A"));
   string_vector_add(svec, string_new("TEST"));
 
-  
   string_vector_t *rvec = string_ssplit(str, del);
-  verify_bool("string vector ssplit 1",str, del, string_vector_equal(svec,rvec));
+  verify_bool("string vector ssplit 1", str, del,
+              string_vector_equal(svec, rvec));
 
   string_vector_deepfree(svec);
   string_vector_deepfree(rvec);
 }
 
-
-/**********************************************************************/  
+/**********************************************************************/
 
 void test_strvec_ssplit2() {
   string_t *str = string_new("THISFOOISFOOANFOO");
@@ -695,16 +678,17 @@ void test_strvec_ssplit2() {
   string_vector_add(svec, string_new("IS"));
   string_vector_add(svec, string_new("AN"));
   string_vector_add(svec, string_new(""));
-  
+
   string_vector_t *rvec = string_ssplit(str, del);
 
-  verify_bool("string vector ssplit 2",str, del, string_vector_equal(svec,rvec));
+  verify_bool("string vector ssplit 2", str, del,
+              string_vector_equal(svec, rvec));
 
   string_vector_deepfree(svec);
   string_vector_deepfree(rvec);
 }
 
-/**********************************************************************/  
+/**********************************************************************/
 
 void test_strvec_ssplit3() {
   string_t *str = string_new("I😄am😄happy");
@@ -715,13 +699,14 @@ void test_strvec_ssplit3() {
   string_vector_add(svec, string_new("happy"));
 
   string_vector_t *rvec = string_ssplit(str, del);
-  verify_bool("string vector ssplit 3",str, del, string_vector_equal(svec,rvec));
+  verify_bool("string vector ssplit 3", str, del,
+              string_vector_equal(svec, rvec));
 
   string_vector_deepfree(svec);
   string_vector_deepfree(rvec);
 }
 
-/**********************************************************************/  
+/**********************************************************************/
 
 void test_strvec_reduce1() {
   string_vector_t *svec = string_vector_empty();
@@ -730,11 +715,11 @@ void test_strvec_reduce1() {
   string_vector_add(svec, string_new("Foobar"));
   string_t *s1 = string_new("FooBarFoobar");
   string_t *s2 = string_vector_reduce(fold, svec, NULL);
-  verify("string vector reduce 1",s1,s2);
+  verify("string vector reduce 1", s1, s2);
   string_vector_deepfree(svec);
 }
 
-/**********************************************************************/  
+/**********************************************************************/
 
 void test_strvec_reduce2() {
   string_vector_t *svec = string_vector_empty();
@@ -744,17 +729,17 @@ void test_strvec_reduce2() {
   string_t *init = string_new("FNORD");
   string_t *s1 = string_new("FNORDFooBarFoobar");
   string_t *s2 = string_vector_reduce(fold, svec, init);
-  verify("string vector reduce 2",s1,s2);
+  verify("string vector reduce 2", s1, s2);
   free(init);
   string_vector_deepfree(svec);
 }
-/**********************************************************************/  
+/**********************************************************************/
 
 void string_vector_tests() {
   string_t *str = string_colored("String vector tests", CYAN);
   string_println(str);
   free(str);
-  
+
   test_strvec_new();
   test_strvec_add();
   test_strvec_resize();
@@ -777,7 +762,7 @@ void string_vector_tests() {
 }
 
 /**********************************************************************/
-/**********************************************************************/  
+/**********************************************************************/
 
 int main() {
   string_tests();
